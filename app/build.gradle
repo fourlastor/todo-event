@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:sqlite-analyzer:0.3.2'
+    }
+}
+
+
 apply plugin: 'com.android.application'
 
 android {
@@ -6,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.daniele.todoevent"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -19,9 +29,21 @@ android {
     }
 }
 
+apply plugin: 'com.novoda.sqlite-analyzer'
+
+sqliteAccess {
+    migrationsDir 'src/main/assets/migrations'
+    packageName 'com.example.daniele.db'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
     compile 'com.squareup.wire:wire-runtime:2.1.1'
+    compile 'com.squareup.sqlbrite:sqlbrite:0.5.1'
+    compile 'com.squareup.okio:okio:1.6.0'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.0'
 }
