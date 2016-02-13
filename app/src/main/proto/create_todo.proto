@@ -1,0 +1,5 @@
+package com.example.daniele.proto.todo;
+
+message InsertTodo {
+  required string name = 1;
+}
