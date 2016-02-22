@@ -1,11 +1,14 @@
 package com.example.daniele.event;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 
+import com.example.daniele.db.DB;
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.QueryObservable;
 import com.squareup.sqlbrite.SqlBrite;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -22,22 +25,26 @@ public class EventRepository {
         this.db = db;
     }
 
-    public Observable<Integer> getEventCount() {
-        QueryObservable query = db.createQuery(Event, "SELECT COUNT(*) FROM " + Event);
+    public Observable<List<DB.Event>> getEvents() {
+        QueryObservable query = db.createQuery(Event, "SELECT * FROM " + Event);
 
         return query.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(marshallToInt());
+                .map(toEventList());
     }
 
-    @NonNull
-    private Func1<SqlBrite.Query, Integer> marshallToInt() {
-        return new Func1<SqlBrite.Query, Integer>() {
+    private Func1<SqlBrite.Query, List<DB.Event>> toEventList() {
+        return new Func1<SqlBrite.Query, List<DB.Event>>() {
             @Override
-            public Integer call(SqlBrite.Query query) {
-                try (Cursor c = query.run()) {
-                    c.moveToFirst();
-                    return c.getInt(0);
+            public List<DB.Event> call(SqlBrite.Query query) {
+                try (Cursor cursor = query.run()) {
+                    List<DB.Event> events = new ArrayList<>(cursor.getCount());
+
+                    while (cursor.moveToNext()) {
+                       events.add(DB.Event.fromCursor(cursor));
+                   }
+
+                    return events;
                 }
             }
         };
