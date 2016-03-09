@@ -8,4 +8,6 @@ public interface Todos {
     Todo get(int index);
 
     void update(String id, String name);
+
+    void delete(String id);
 }

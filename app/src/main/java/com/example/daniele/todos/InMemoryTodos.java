@@ -34,4 +34,17 @@ public class InMemoryTodos implements Todos {
         }
     }
 
+    @Override
+    public void delete(String id) {
+        for (int i = 0; i < todos.size(); i++) {
+            Todo todo = todos.get(i);
+
+            if (todo.id.equals(id)) {
+                todos.remove(i);
+
+                return;
+            }
+        }
+    }
+
 }

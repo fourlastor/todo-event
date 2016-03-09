@@ -14,6 +14,7 @@ import com.example.daniele.event.EventRepository;
 import com.example.daniele.event.EventService;
 import com.example.daniele.event.EventType;
 import com.example.daniele.proto.todo.CreateTodo;
+import com.example.daniele.proto.todo.DeleteTodo;
 import com.example.daniele.proto.todo.UpdateTodo;
 import com.example.daniele.todoevent.R;
 
@@ -49,11 +50,20 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
     private TodosAdapter.TodoClickListener onTodoClicked() {
         return new TodosAdapter.TodoClickListener() {
             @Override
-            public void onTodoClicked(Todo todo) {
+            public void onEditTodoClicked(Todo todo) {
                 DialogFragment todoDialog = TodoDialog.editTodo(todo);
                 todoDialog.show(getFragmentManager(), TODO_DIALOG_FRAGMENT_TAG);
             }
+
+            @Override
+            public void onDeleteTodoClicked(Todo todo) {
+                deleteTodo(todo);
+            }
         };
+    }
+
+    private void deleteTodo(Todo todo) {
+        EventService.deleteTodo(this, todo.id);
     }
 
     @Override
@@ -106,6 +116,13 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
                             try {
                                 UpdateTodo update = UpdateTodo.ADAPTER.decode(event.getData());
                                 todos.update(update.id, update.name);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        case EventType.DELETE_TODO:
+                            try {
+                                DeleteTodo update = DeleteTodo.ADAPTER.decode(event.getData());
+                                todos.delete(update.id);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }

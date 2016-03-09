@@ -58,6 +58,9 @@ public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHold
         @Bind(R.id.edit_todo)
         ImageButton editTodo;
 
+        @Bind(R.id.delete_todo)
+        ImageButton deleteTodo;
+
         public TodoViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -70,7 +73,15 @@ public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHold
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            listener.onTodoClicked(todo);
+                            listener.onEditTodoClicked(todo);
+                        }
+                    }
+            );
+            deleteTodo.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            listener.onDeleteTodoClicked(todo);
                         }
                     }
             );
@@ -78,6 +89,7 @@ public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHold
     }
 
     interface TodoClickListener {
-        void onTodoClicked(Todo todo);
+        void onEditTodoClicked(Todo todo);
+        void onDeleteTodoClicked(Todo todo);
     }
 }

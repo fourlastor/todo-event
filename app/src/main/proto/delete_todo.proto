@@ -1,0 +1,5 @@
+package com.example.daniele.proto.todo;
+
+message DeleteTodo {
+    required string id = 1;
+}
