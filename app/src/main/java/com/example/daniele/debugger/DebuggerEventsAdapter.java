@@ -15,7 +15,13 @@ import butterknife.ButterKnife;
 
 public class DebuggerEventsAdapter extends RecyclerView.Adapter<DebuggerEventsAdapter.EventViewHolder> {
 
+    private final EventClickListener listener;
+
     private DebuggerEvents debuggerEvents = new EmptyDebuggerEvents();
+
+    public DebuggerEventsAdapter(EventClickListener listener) {
+        this.listener = listener;
+    }
 
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -28,7 +34,7 @@ public class DebuggerEventsAdapter extends RecyclerView.Adapter<DebuggerEventsAd
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        holder.bind(debuggerEvents.get(position));
+        holder.bind(debuggerEvents.get(position), listener);
     }
 
     @Override
@@ -51,13 +57,30 @@ public class DebuggerEventsAdapter extends RecyclerView.Adapter<DebuggerEventsAd
 
         public EventViewHolder(View itemView) {
             super(itemView);
-
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(DebuggerEvent debuggerEvent) {
+        public void bind(DebuggerEvent debuggerEvent, EventClickListener listener) {
             eventMessage.setText(debuggerEvent.message());
             DrawableCompat.setTint(eventIcon.getDrawable(), debuggerEvent.color());
+
+            itemView.setOnClickListener(forwardEventToListener(debuggerEvent, listener));
         }
+
+        private View.OnClickListener forwardEventToListener(
+                final DebuggerEvent debuggerEvent,
+                final EventClickListener listener
+        ) {
+            return new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onEventClicked(debuggerEvent);
+                }
+            };
+        }
+    }
+
+    interface EventClickListener {
+        void onEventClicked(DebuggerEvent debuggerEvent);
     }
 }

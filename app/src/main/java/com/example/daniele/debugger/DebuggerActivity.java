@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import com.example.daniele.Projector;
 import com.example.daniele.db.BriteDatabaseSingleton;
 import com.example.daniele.db.DB;
+import com.example.daniele.event.EventPreferences;
 import com.example.daniele.event.EventRepository;
 import com.example.daniele.event.EventType;
 import com.example.daniele.proto.todo.CreateTodo;
@@ -29,6 +30,7 @@ public class DebuggerActivity extends AppCompatActivity {
 
     private EventRepository eventRepository;
     private DebuggerEventsAdapter adapter;
+    private EventPreferences eventPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +38,36 @@ public class DebuggerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_debugger);
         ButterKnife.bind(this);
 
+        eventPreferences = new EventPreferences(this);
+
         eventList.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new DebuggerEventsAdapter();
+        adapter = new DebuggerEventsAdapter(onEventClicked());
         eventList.setAdapter(adapter);
 
-        eventRepository = new EventRepository(BriteDatabaseSingleton.getInstance(this));
+        eventRepository = new EventRepository(
+                BriteDatabaseSingleton.getInstance(this),
+                new EventPreferences(this)
+        );
+    }
+
+    private DebuggerEventsAdapter.EventClickListener onEventClicked() {
+        return new DebuggerEventsAdapter.EventClickListener() {
+            @Override
+            public void onEventClicked(DebuggerEvent debuggerEvent) {
+                storeSelectedEvent(debuggerEvent);
+            }
+        };
+    }
+
+    private void storeSelectedEvent(DebuggerEvent debuggerEvent) {
+        eventPreferences.storePlayhead(debuggerEvent.id());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        eventRepository.getEvents()
+        eventRepository.getAllEvents()
                 .map(toEvents())
                 .subscribe(onNewEventsAvailable());
     }
@@ -66,25 +86,27 @@ public class DebuggerActivity extends AppCompatActivity {
             }
 
             private DebuggerEvent debuggerEventFrom(DB.Event event) {
+                String eventId = event.getEventId();
+
                 switch (event.getEventType()) {
                     case EventType.CREATE_TODO:
                         try {
                             CreateTodo insert = CreateTodo.ADAPTER.decode(event.getData());
-                            return new TodoCreated(insert.id, insert.name);
+                            return new TodoCreated(eventId, insert.id, insert.name);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     case EventType.UPDATE_TODO:
                         try {
                             UpdateTodo update = UpdateTodo.ADAPTER.decode(event.getData());
-                            return new TodoUpdated(update.id, update.name);
+                            return new TodoUpdated(eventId, update.id, update.name);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                     case EventType.DELETE_TODO:
                         try {
                             DeleteTodo delete = DeleteTodo.ADAPTER.decode(event.getData());
-                            return new TodoDeleted(delete.id);
+                            return new TodoDeleted(eventId, delete.id);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

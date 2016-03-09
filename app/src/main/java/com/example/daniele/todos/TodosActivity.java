@@ -10,6 +10,7 @@ import android.view.View;
 import com.example.daniele.Projector;
 import com.example.daniele.db.BriteDatabaseSingleton;
 import com.example.daniele.db.DB;
+import com.example.daniele.event.EventPreferences;
 import com.example.daniele.event.EventRepository;
 import com.example.daniele.event.EventService;
 import com.example.daniele.event.EventType;
@@ -41,7 +42,10 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
         setContentView(R.layout.activity_todos);
         ButterKnife.bind(this);
 
-        eventRepository = new EventRepository(BriteDatabaseSingleton.getInstance(this));
+        eventRepository = new EventRepository(
+                BriteDatabaseSingleton.getInstance(this),
+                new EventPreferences(this)
+        );
         todoList.setLayoutManager(new LinearLayoutManager(this));
         todosAdapter = new TodosAdapter(onTodoClicked());
         todoList.setAdapter(todosAdapter);

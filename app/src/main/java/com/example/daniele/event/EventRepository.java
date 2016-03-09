@@ -20,12 +20,42 @@ import static com.example.daniele.db.DB.Tables.Event;
 public class EventRepository {
 
     private final BriteDatabase db;
+    private final EventPreferences preferences;
 
-    public EventRepository(BriteDatabase db) {
+    public EventRepository(BriteDatabase db, EventPreferences preferences) {
         this.db = db;
+        this.preferences = preferences;
     }
 
     public Observable<List<DB.Event>> getEvents() {
+        return getAllEvents()
+                .map(limitToPlayhead());
+    }
+
+    private Func1<List<DB.Event>, List<DB.Event>> limitToPlayhead() {
+        return new Func1<List<DB.Event>, List<DB.Event>>() {
+            @Override
+            public List<DB.Event> call(List<DB.Event> events) {
+                String playhead = preferences.getPlayhead();
+                if (playhead.isEmpty()) {
+                    return events;
+                }
+
+                List<DB.Event> limitedEvents = new ArrayList<>();
+
+                for (DB.Event event : events) {
+                    limitedEvents.add(event);
+                    if (event.getEventId().equals(playhead)) {
+                        break;
+                    }
+                }
+
+                return limitedEvents;
+            }
+        };
+    }
+
+    public Observable<List<DB.Event>> getAllEvents() {
         QueryObservable query = db.createQuery(Event, "SELECT * FROM " + Event + " ORDER BY " + DB.Columns.Event.CreatedAt + " ASC");
 
         return query.subscribeOn(Schedulers.io())
