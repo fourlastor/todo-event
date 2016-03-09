@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.example.daniele.Projector;
 import com.example.daniele.db.BriteDatabaseSingleton;
 import com.example.daniele.db.DB;
 import com.example.daniele.event.EventRepository;
@@ -22,7 +23,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
-import rx.functions.Func1;
 
 public class TodosActivity extends AppCompatActivity {
 
@@ -64,8 +64,8 @@ public class TodosActivity extends AppCompatActivity {
         };
     }
 
-    private Func1<List<DB.Event>, List<Todo>> toTodoList() {
-        return new Func1<List<DB.Event>, List<Todo>>() {
+    private Projector<List<Todo>> toTodoList() {
+        return new Projector<List<Todo>>() {
             @Override
             public List<Todo> call(List<DB.Event> events) {
                 List<Todo> todos = new ArrayList<>();
