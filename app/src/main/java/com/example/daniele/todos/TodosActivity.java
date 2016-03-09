@@ -14,6 +14,7 @@ import com.example.daniele.event.EventRepository;
 import com.example.daniele.event.EventService;
 import com.example.daniele.event.EventType;
 import com.example.daniele.proto.todo.CreateTodo;
+import com.example.daniele.proto.todo.UpdateTodo;
 import com.example.daniele.todoevent.R;
 
 import java.io.IOException;
@@ -92,14 +93,22 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
                 Todos todos = new Todos();
 
                 for (DB.Event event : events) {
-                    if (event.getEventType() == EventType.CREATE_TODO) {
-                        try {
-                            CreateTodo insert = CreateTodo.ADAPTER.decode(event.getData());
-
-                            todos.add(new Todo(insert.id, insert.name, new Date((long) event.getCreatedAt())));
-                        } catch (IOException e) {
-                            throw new RuntimeException("Marshalling failed");
-                        }
+                    switch (event.getEventType()) {
+                        case EventType.CREATE_TODO:
+                            try {
+                                CreateTodo insert = CreateTodo.ADAPTER.decode(event.getData());
+                                todos.add(new Todo(insert.id, insert.name, new Date((long) event.getCreatedAt())));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        case EventType.UPDATE_TODO:
+                            try {
+                                UpdateTodo update = UpdateTodo.ADAPTER.decode(event.getData());
+                                todos.update(update.id, update.name);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                     }
                 }
 

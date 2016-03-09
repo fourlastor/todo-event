@@ -26,7 +26,7 @@ public class EventRepository {
     }
 
     public Observable<List<DB.Event>> getEvents() {
-        QueryObservable query = db.createQuery(Event, "SELECT * FROM " + Event + " ORDER BY " + DB.Columns.Event.CreatedAt + " DESC");
+        QueryObservable query = db.createQuery(Event, "SELECT * FROM " + Event + " ORDER BY " + DB.Columns.Event.CreatedAt + " ASC");
 
         return query.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
