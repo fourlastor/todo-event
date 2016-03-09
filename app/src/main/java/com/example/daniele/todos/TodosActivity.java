@@ -1,5 +1,6 @@
 package com.example.daniele.todos;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,7 +25,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 
-public class TodosActivity extends AppCompatActivity {
+public class TodosActivity extends AppCompatActivity implements TodoDialog.Listener {
 
     @Bind(R.id.todo_list)
     RecyclerView todoList;
@@ -55,11 +56,16 @@ public class TodosActivity extends AppCompatActivity {
         findViewById(R.id.add_todo).setOnClickListener(addTodo());
     }
 
+    @Override
+    public void onCreateTodo(String name) {
+        EventService.addTodo(TodosActivity.this, name);
+    }
+
     private Action1<List<Todo>> onNewTodosAvailable() {
         return new Action1<List<Todo>>() {
             @Override
             public void call(List<Todo> todos) {
-                 todosAdapter.updateWith(todos);
+                todosAdapter.updateWith(todos);
             }
         };
     }
@@ -82,7 +88,6 @@ public class TodosActivity extends AppCompatActivity {
                     }
                 }
 
-
                 return todos;
             }
         };
@@ -92,7 +97,9 @@ public class TodosActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventService.addTodo(TodosActivity.this, "todo");
+                DialogFragment todoDialog = TodoDialog.newTodo();
+
+                todoDialog.show(getFragmentManager(), "TodoDialogFragment");
             }
         };
     }
