@@ -21,6 +21,8 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
 
   private static final long serialVersionUID = 0L;
 
+  public static final String DEFAULT_ID = "";
+
   public static final String DEFAULT_NAME = "";
 
   @WireField(
@@ -28,20 +30,29 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
       adapter = "com.squareup.wire.ProtoAdapter#STRING",
       label = WireField.Label.REQUIRED
   )
+  public final String id;
+
+  @WireField(
+      tag = 2,
+      adapter = "com.squareup.wire.ProtoAdapter#STRING",
+      label = WireField.Label.REQUIRED
+  )
   public final String name;
 
-  public InsertTodo(String name) {
-    this(name, ByteString.EMPTY);
+  public InsertTodo(String id, String name) {
+    this(id, name, ByteString.EMPTY);
   }
 
-  public InsertTodo(String name, ByteString unknownFields) {
+  public InsertTodo(String id, String name, ByteString unknownFields) {
     super(ADAPTER, unknownFields);
+    this.id = id;
     this.name = name;
   }
 
   @Override
   public Builder newBuilder() {
     Builder builder = new Builder();
+    builder.id = id;
     builder.name = name;
     builder.addUnknownFields(unknownFields());
     return builder;
@@ -53,6 +64,7 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
     if (!(other instanceof InsertTodo)) return false;
     InsertTodo o = (InsertTodo) other;
     return Internal.equals(unknownFields(), o.unknownFields())
+        && Internal.equals(id, o.id)
         && Internal.equals(name, o.name);
   }
 
@@ -61,6 +73,7 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
     int result = super.hashCode;
     if (result == 0) {
       result = unknownFields().hashCode();
+      result = result * 37 + (id != null ? id.hashCode() : 0);
       result = result * 37 + (name != null ? name.hashCode() : 0);
       super.hashCode = result;
     }
@@ -70,14 +83,22 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
+    if (id != null) builder.append(", id=").append(id);
     if (name != null) builder.append(", name=").append(name);
     return builder.replace(0, 2, "InsertTodo{").append('}').toString();
   }
 
   public static final class Builder extends Message.Builder<InsertTodo, Builder> {
+    public String id;
+
     public String name;
 
     public Builder() {
+    }
+
+    public Builder id(String id) {
+      this.id = id;
+      return this;
     }
 
     public Builder name(String name) {
@@ -87,10 +108,12 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
 
     @Override
     public InsertTodo build() {
-      if (name == null) {
-        throw Internal.missingRequiredFields(name, "name");
+      if (id == null
+          || name == null) {
+        throw Internal.missingRequiredFields(id, "id",
+            name, "name");
       }
-      return new InsertTodo(name, buildUnknownFields());
+      return new InsertTodo(id, name, buildUnknownFields());
     }
   }
 
@@ -101,13 +124,15 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
 
     @Override
     public int encodedSize(InsertTodo value) {
-      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.name)
+      return ProtoAdapter.STRING.encodedSizeWithTag(1, value.id)
+          + ProtoAdapter.STRING.encodedSizeWithTag(2, value.name)
           + value.unknownFields().size();
     }
 
     @Override
     public void encode(ProtoWriter writer, InsertTodo value) throws IOException {
-      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.name);
+      ProtoAdapter.STRING.encodeWithTag(writer, 1, value.id);
+      ProtoAdapter.STRING.encodeWithTag(writer, 2, value.name);
       writer.writeBytes(value.unknownFields());
     }
 
@@ -117,7 +142,8 @@ public final class InsertTodo extends Message<InsertTodo, InsertTodo.Builder> {
       long token = reader.beginMessage();
       for (int tag; (tag = reader.nextTag()) != -1;) {
         switch (tag) {
-          case 1: builder.name(ProtoAdapter.STRING.decode(reader)); break;
+          case 1: builder.id(ProtoAdapter.STRING.decode(reader)); break;
+          case 2: builder.name(ProtoAdapter.STRING.decode(reader)); break;
           default: {
             FieldEncoding fieldEncoding = reader.peekFieldEncoding();
             Object value = fieldEncoding.rawProtoAdapter().decode(reader);

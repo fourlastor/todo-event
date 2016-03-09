@@ -45,7 +45,9 @@ public class EventService extends IntentService {
     private void handleAddTodo(String todoName) {
         BriteDatabase db = BriteDatabaseSingleton.getInstance(this);
 
-        InsertTodo insertTodo = new InsertTodo(todoName);
+        String todoId = UUID.randomUUID().toString();
+
+        InsertTodo insertTodo = new InsertTodo(todoId, todoName);
 
         String eventId = UUID.randomUUID().toString();
         int time = (int) new Date().getTime();

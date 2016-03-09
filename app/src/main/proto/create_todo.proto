@@ -1,5 +1,6 @@
 package com.example.daniele.proto.todo;
 
 message InsertTodo {
-  required string name = 1;
+    required string id = 1;
+    required string name = 2;
 }
