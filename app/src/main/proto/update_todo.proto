@@ -1,6 +1,6 @@
 package com.example.daniele.proto.todo;
 
-message CreateTodo {
+message UpdateTodo {
     required string id = 1;
     required string name = 2;
 }

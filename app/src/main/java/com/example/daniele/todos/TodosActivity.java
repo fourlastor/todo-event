@@ -13,7 +13,7 @@ import com.example.daniele.db.DB;
 import com.example.daniele.event.EventRepository;
 import com.example.daniele.event.EventService;
 import com.example.daniele.event.EventType;
-import com.example.daniele.proto.todo.InsertTodo;
+import com.example.daniele.proto.todo.CreateTodo;
 import com.example.daniele.todoevent.R;
 
 import java.io.IOException;
@@ -26,6 +26,7 @@ import rx.functions.Action1;
 
 public class TodosActivity extends AppCompatActivity implements TodoDialog.Listener {
 
+    private static final String TODO_DIALOG_FRAGMENT_TAG = "TodoDialogFragment";
     @Bind(R.id.todo_list)
     RecyclerView todoList;
 
@@ -40,8 +41,18 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
 
         eventRepository = new EventRepository(BriteDatabaseSingleton.getInstance(this));
         todoList.setLayoutManager(new LinearLayoutManager(this));
-        todosAdapter = new TodosAdapter();
+        todosAdapter = new TodosAdapter(onTodoClicked());
         todoList.setAdapter(todosAdapter);
+    }
+
+    private TodosAdapter.TodoClickListener onTodoClicked() {
+        return new TodosAdapter.TodoClickListener() {
+            @Override
+            public void onTodoClicked(Todo todo) {
+                DialogFragment todoDialog = TodoDialog.editTodo(todo);
+                todoDialog.show(getFragmentManager(), TODO_DIALOG_FRAGMENT_TAG);
+            }
+        };
     }
 
     @Override
@@ -57,7 +68,12 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
 
     @Override
     public void onCreateTodo(String name) {
-        EventService.addTodo(TodosActivity.this, name);
+        EventService.createTodo(TodosActivity.this, name);
+    }
+
+    @Override
+    public void onUpdateTodo(String id, String name) {
+        EventService.updateTodo(TodosActivity.this, id, name);
     }
 
     private Action1<Todos> onNewTodosAvailable() {
@@ -76,11 +92,11 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
                 Todos todos = new Todos();
 
                 for (DB.Event event : events) {
-                    if (event.getEventType() == EventType.ADD_TODO) {
+                    if (event.getEventType() == EventType.CREATE_TODO) {
                         try {
-                            InsertTodo insertTodo = InsertTodo.ADAPTER.decode(event.getData());
+                            CreateTodo insert = CreateTodo.ADAPTER.decode(event.getData());
 
-                            todos.add(new Todo(insertTodo.name, new Date((long) event.getCreatedAt())));
+                            todos.add(new Todo(insert.id, insert.name, new Date((long) event.getCreatedAt())));
                         } catch (IOException e) {
                             throw new RuntimeException("Marshalling failed");
                         }
@@ -98,7 +114,7 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
             public void onClick(View v) {
                 DialogFragment todoDialog = TodoDialog.newTodo();
 
-                todoDialog.show(getFragmentManager(), "TodoDialogFragment");
+                todoDialog.show(getFragmentManager(), TODO_DIALOG_FRAGMENT_TAG);
             }
         };
     }
