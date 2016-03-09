@@ -22,7 +22,7 @@
 
     <activity
       android:name="com.example.daniele.debugger.DebuggerActivity"
-      android:label="Debugger">
+      android:label="TodoEvent Debugger">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
