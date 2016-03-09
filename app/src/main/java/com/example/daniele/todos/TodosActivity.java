@@ -119,6 +119,7 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
+                            break;
                         case EventType.DELETE_TODO:
                             try {
                                 DeleteTodo update = DeleteTodo.ADAPTER.decode(event.getData());
@@ -126,6 +127,7 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
+                            break;
                     }
                 }
 
