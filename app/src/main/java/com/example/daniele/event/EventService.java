@@ -26,6 +26,7 @@ public class EventService extends IntentService {
     private static final String EXTRA_TODO_ID = "com.example.daniele.event.extra.TODO_ID";
     private static final String EXTRA_TODO_NAME = "com.example.daniele.event.extra.TODO_NAME";
     private BriteDatabase db;
+    private EventPreferences preferences;
 
     public EventService() {
         super("EventService");
@@ -36,6 +37,7 @@ public class EventService extends IntentService {
         super.onCreate();
 
         db = BriteDatabaseSingleton.getInstance(this);
+        preferences = new EventPreferences(this);
     }
 
     public static void createTodo(Context context, String todoName) {
@@ -62,6 +64,11 @@ public class EventService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        if (preferences.isInPausedState()) {
+            return;
+        }
+
         if (intent != null) {
             final String action = intent.getAction();
 

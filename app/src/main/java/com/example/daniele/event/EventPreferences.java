@@ -28,10 +28,6 @@ public class EventPreferences {
                 .apply();
     }
 
-    public String getPlayhead() {
-        return preferences.getString(KEY_PLAYHEAD_ID, NO_PLAYHEAD);
-    }
-
     public Observable<String> observePlayhead() {
         return rxSharedPreferences.getString(KEY_PLAYHEAD_ID, NO_PLAYHEAD)
                 .asObservable();
@@ -48,5 +44,9 @@ public class EventPreferences {
     public Observable<Boolean> observabePauseState() {
         return rxSharedPreferences.getBoolean(KEY_PAUSE_STATE, NOT_PAUSED)
                 .asObservable();
+    }
+
+    public boolean isInPausedState() {
+        return preferences.getBoolean(KEY_PAUSE_STATE, NOT_PAUSED);
     }
 }
