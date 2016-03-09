@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.DateFormat;
-import java.util.Collections;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -17,7 +15,7 @@ public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHold
 
     private static DateFormat dateFormat = DateFormat.getDateInstance();
 
-    private List<Todo> todos = Collections.emptyList();
+    private Todos todos = new Todos();
 
     @Override
     public TodoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -35,10 +33,10 @@ public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHold
 
     @Override
     public int getItemCount() {
-        return todos.size();
+        return todos.count();
     }
 
-    public void updateWith(List<Todo> todos) {
+    public void updateWith(Todos todos) {
         this.todos = todos;
         notifyDataSetChanged();
     }

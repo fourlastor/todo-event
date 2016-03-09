@@ -17,7 +17,6 @@ import com.example.daniele.proto.todo.InsertTodo;
 import com.example.daniele.todoevent.R;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -61,20 +60,20 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
         EventService.addTodo(TodosActivity.this, name);
     }
 
-    private Action1<List<Todo>> onNewTodosAvailable() {
-        return new Action1<List<Todo>>() {
+    private Action1<Todos> onNewTodosAvailable() {
+        return new Action1<Todos>() {
             @Override
-            public void call(List<Todo> todos) {
+            public void call(Todos todos) {
                 todosAdapter.updateWith(todos);
             }
         };
     }
 
-    private Projector<List<Todo>> toTodoList() {
-        return new Projector<List<Todo>>() {
+    private Projector<Todos> toTodoList() {
+        return new Projector<Todos>() {
             @Override
-            public List<Todo> call(List<DB.Event> events) {
-                List<Todo> todos = new ArrayList<>();
+            public Todos call(List<DB.Event> events) {
+                Todos todos = new Todos();
 
                 for (DB.Event event : events) {
                     if (event.getEventType() == EventType.ADD_TODO) {
