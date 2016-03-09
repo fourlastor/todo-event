@@ -9,14 +9,10 @@ import android.widget.TextView;
 
 import com.example.daniele.todoevent.R;
 
-import java.text.DateFormat;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHolder> {
-
-    private static DateFormat dateFormat = DateFormat.getDateInstance();
 
     private final TodoClickListener listener;
 
@@ -67,8 +63,7 @@ public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHold
         }
 
         public void bind(final Todo todo, final TodoClickListener listener) {
-            String text = String.format("%s: %s", todo.name, dateFormat.format(todo.createdAt));
-            todoName.setText(text);
+            todoName.setText(todo.name);
             editTodo.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
