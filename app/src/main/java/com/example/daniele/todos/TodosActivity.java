@@ -122,8 +122,8 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
                             break;
                         case EventType.DELETE_TODO:
                             try {
-                                DeleteTodo update = DeleteTodo.ADAPTER.decode(event.getData());
-                                todos.delete(update.id);
+                                DeleteTodo delete = DeleteTodo.ADAPTER.decode(event.getData());
+                                todos.delete(delete.id);
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
