@@ -90,7 +90,7 @@ public class TodosActivity extends AppCompatActivity implements TodoDialog.Liste
         return new Projector<Todos>() {
             @Override
             public Todos call(List<DB.Event> events) {
-                Todos todos = new Todos();
+                Todos todos = new InMemoryTodos();
 
                 for (DB.Event event : events) {
                     switch (event.getEventType()) {

@@ -20,7 +20,7 @@ public class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHold
 
     private final TodoClickListener listener;
 
-    private Todos todos = new Todos();
+    private Todos todos = new InMemoryTodos();
 
     public TodosAdapter(TodoClickListener listener) {
         this.listener = listener;
