@@ -21,8 +21,4 @@ public class TodoCreated implements DebuggerEvent {
         return String.format("%s todo created with id %s", name, id);
     }
 
-    @Override
-    public int color() {
-        return 0xff00ff00;
-    }
 }

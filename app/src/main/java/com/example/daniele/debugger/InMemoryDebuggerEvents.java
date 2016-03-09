@@ -5,10 +5,17 @@ import java.util.List;
 
 public class InMemoryDebuggerEvents implements DebuggerEvents {
 
+    private final String playhead;
     private final List<DebuggerEvent> events;
 
-    public InMemoryDebuggerEvents(int initialCapacity) {
-        events = new ArrayList<>(initialCapacity);
+    public InMemoryDebuggerEvents(String playhead, int initialCapacity) {
+        this.playhead = playhead;
+        this.events = new ArrayList<>(initialCapacity);
+    }
+
+    @Override
+    public String playhead() {
+        return playhead;
     }
 
     @Override

@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.example.daniele.Projector;
 import com.example.daniele.db.BriteDatabaseSingleton;
 import com.example.daniele.db.DB;
 import com.example.daniele.event.EventPreferences;
@@ -21,7 +20,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.functions.Action1;
+import rx.functions.Func2;
 
 public class DebuggerActivity extends AppCompatActivity {
 
@@ -67,16 +68,18 @@ public class DebuggerActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        eventRepository.getAllEvents()
-                .map(toEvents())
-                .subscribe(onNewEventsAvailable());
+        Observable.combineLatest(
+                eventRepository.getAllEvents(),
+                eventPreferences.observePlayhead(),
+                toEvents()
+        ).subscribe(onNewEventsAvailable());
     }
 
-    private Projector<DebuggerEvents> toEvents() {
-        return new Projector<DebuggerEvents>() {
+    private Func2<List<DB.Event>, String, DebuggerEvents> toEvents() {
+        return new Func2<List<DB.Event>, String, DebuggerEvents>() {
             @Override
-            public DebuggerEvents call(List<DB.Event> events) {
-                DebuggerEvents debuggerEvents = new InMemoryDebuggerEvents(events.size());
+            public DebuggerEvents call(List<DB.Event> events, String playhead) {
+                DebuggerEvents debuggerEvents = new InMemoryDebuggerEvents(playhead, events.size());
 
                 for (DB.Event event : events) {
                     debuggerEvents.add(debuggerEventFrom(event));

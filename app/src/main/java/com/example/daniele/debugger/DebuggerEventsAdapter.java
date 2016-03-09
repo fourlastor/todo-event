@@ -1,5 +1,6 @@
 package com.example.daniele.debugger;
 
+import android.support.annotation.ColorInt;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,7 +35,9 @@ public class DebuggerEventsAdapter extends RecyclerView.Adapter<DebuggerEventsAd
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        holder.bind(debuggerEvents.get(position), listener);
+        DebuggerEvent debuggerEvent = debuggerEvents.get(position);
+        boolean asPlayhead = debuggerEvents.playhead().equals(debuggerEvent.id());
+        holder.bind(debuggerEvent, listener, asPlayhead);
     }
 
     @Override
@@ -60,11 +63,16 @@ public class DebuggerEventsAdapter extends RecyclerView.Adapter<DebuggerEventsAd
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(DebuggerEvent debuggerEvent, EventClickListener listener) {
+        public void bind(DebuggerEvent debuggerEvent, EventClickListener listener, boolean asPlayhead) {
             eventMessage.setText(debuggerEvent.message());
-            DrawableCompat.setTint(eventIcon.getDrawable(), debuggerEvent.color());
+            DrawableCompat.setTint(eventIcon.getDrawable(), playheadColor(asPlayhead));
 
             itemView.setOnClickListener(forwardEventToListener(debuggerEvent, listener));
+        }
+
+        @ColorInt
+        private int playheadColor(boolean asPlayhead) {
+            return asPlayhead ? 0xffff0000 : 0xffcccccc;
         }
 
         private View.OnClickListener forwardEventToListener(

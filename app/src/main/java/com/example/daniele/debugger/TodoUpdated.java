@@ -20,9 +20,4 @@ public class TodoUpdated implements DebuggerEvent {
     public String message() {
         return String.format("Todo with id %s updated to %s", id, name);
     }
-
-    @Override
-    public int color() {
-        return 0xff0000ff;
-    }
 }
