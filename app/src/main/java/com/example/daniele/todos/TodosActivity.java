@@ -75,7 +75,7 @@ public class TodosActivity extends AppCompatActivity {
                         try {
                             InsertTodo insertTodo = InsertTodo.ADAPTER.decode(event.getData());
 
-                            todos.add(new Todo(insertTodo.name, new Date(event.getTime())));
+                            todos.add(new Todo(insertTodo.name, new Date((long) event.getCreatedAt())));
                         } catch (IOException e) {
                             throw new RuntimeException("Marshalling failed");
                         }

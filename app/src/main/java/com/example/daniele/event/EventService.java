@@ -50,7 +50,7 @@ public class EventService extends IntentService {
         InsertTodo insertTodo = new InsertTodo(todoId, todoName);
 
         String eventId = UUID.randomUUID().toString();
-        int time = (int) new Date().getTime();
+        long time = new Date().getTime();
 
         ContentValues values = new Event(eventId, EventType.ADD_TODO, time, InsertTodo.ADAPTER.encode(insertTodo))
                 .toContentValues();
