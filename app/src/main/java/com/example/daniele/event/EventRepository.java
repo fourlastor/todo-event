@@ -13,6 +13,7 @@ import java.util.List;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 
 import static com.example.daniele.db.DB.Tables.Event;
@@ -28,16 +29,19 @@ public class EventRepository {
     }
 
     public Observable<List<DB.Event>> getEvents() {
-        return getAllEvents()
-                .map(limitToPlayhead());
+        return Observable.combineLatest(
+                getAllEvents(),
+                preferences.observabePauseState(),
+                preferences.observePlayhead(),
+                limitToPlayhead()
+        );
     }
 
-    private Func1<List<DB.Event>, List<DB.Event>> limitToPlayhead() {
-        return new Func1<List<DB.Event>, List<DB.Event>>() {
+    private Func3<List<DB.Event>, Boolean, String, List<DB.Event>> limitToPlayhead() {
+        return new Func3<List<DB.Event>, Boolean, String, List<DB.Event>>() {
             @Override
-            public List<DB.Event> call(List<DB.Event> events) {
-                String playhead = preferences.getPlayhead();
-                if (playhead.isEmpty()) {
+            public List<DB.Event> call(List<DB.Event> events, Boolean isPaused, String playhead) {
+                if (!isPaused || playhead.isEmpty()) {
                     return events;
                 }
 

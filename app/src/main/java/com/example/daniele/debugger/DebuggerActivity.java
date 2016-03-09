@@ -1,9 +1,12 @@
 package com.example.daniele.debugger;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.example.daniele.db.BriteDatabaseSingleton;
 import com.example.daniele.db.DB;
@@ -29,6 +32,9 @@ public class DebuggerActivity extends AppCompatActivity {
     @Bind(R.id.event_list)
     RecyclerView eventList;
 
+    @Bind(R.id.play_pause)
+    FloatingActionButton playPauseButton;
+
     private EventRepository eventRepository;
     private DebuggerEventsAdapter adapter;
     private EventPreferences eventPreferences;
@@ -49,6 +55,17 @@ public class DebuggerActivity extends AppCompatActivity {
                 BriteDatabaseSingleton.getInstance(this),
                 new EventPreferences(this)
         );
+
+        playPauseButton.setOnClickListener(togglePlayPause());
+    }
+
+    private View.OnClickListener togglePlayPause() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventPreferences.togglePausedState();
+            }
+        };
     }
 
     private DebuggerEventsAdapter.EventClickListener onEventClicked() {
@@ -73,6 +90,19 @@ public class DebuggerActivity extends AppCompatActivity {
                 eventPreferences.observePlayhead(),
                 toEvents()
         ).subscribe(onNewEventsAvailable());
+
+        eventPreferences.observabePauseState().subscribe(setPlayPauseButton());
+    }
+
+    @NonNull
+    private Action1<Boolean> setPlayPauseButton() {
+        return new Action1<Boolean>() {
+            @Override
+            public void call(Boolean paused) {
+                int res = paused ? R.drawable.ic_play : R.drawable.ic_pause;
+                playPauseButton.setImageResource(res);
+            }
+        };
     }
 
     private Func2<List<DB.Event>, String, DebuggerEvents> toEvents() {
