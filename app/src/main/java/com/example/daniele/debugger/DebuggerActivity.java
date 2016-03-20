@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.example.daniele.db.BriteDatabaseSingleton;
 import com.example.daniele.db.DB;
@@ -21,19 +22,14 @@ import com.example.daniele.todoevent.R;
 import java.io.IOException;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func2;
 
-public class DebuggerActivity extends AppCompatActivity {
+public abstract class DebuggerActivity extends AppCompatActivity {
 
-    @Bind(R.id.event_list)
-    RecyclerView eventList;
-
-    @Bind(R.id.play_pause)
-    FloatingActionButton playPauseButton;
+    private FloatingActionButton playPauseButton;
+    private FrameLayout mainContent;
 
     private EventRepository eventRepository;
     private DebuggerEventsAdapter adapter;
@@ -42,8 +38,11 @@ public class DebuggerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_debugger);
-        ButterKnife.bind(this);
+        super.setContentView(R.layout.activity_debugger);
+
+        RecyclerView eventList = (RecyclerView) findViewById(R.id.event_list);
+        playPauseButton = (FloatingActionButton) findViewById(R.id.play_pause);
+        mainContent = (FrameLayout) findViewById(R.id.main_content);
 
         eventPreferences = new EventPreferences(this);
 
@@ -57,6 +56,11 @@ public class DebuggerActivity extends AppCompatActivity {
         );
 
         playPauseButton.setOnClickListener(togglePlayPause());
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        getLayoutInflater().inflate(layoutResID, mainContent, true);
     }
 
     private View.OnClickListener togglePlayPause() {

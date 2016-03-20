@@ -2,7 +2,6 @@ package com.example.daniele.todos;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,6 +9,7 @@ import android.view.View;
 import com.example.daniele.Projector;
 import com.example.daniele.db.BriteDatabaseSingleton;
 import com.example.daniele.db.DB;
+import com.example.daniele.debugger.DebuggerActivity;
 import com.example.daniele.event.EventPreferences;
 import com.example.daniele.event.EventRepository;
 import com.example.daniele.event.EventService;
@@ -27,9 +27,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.functions.Action1;
 
-public class TodosActivity extends AppCompatActivity implements TodoDialog.Listener {
+public class TodosActivity extends DebuggerActivity implements TodoDialog.Listener {
 
     private static final String TODO_DIALOG_FRAGMENT_TAG = "TodoDialogFragment";
+
     @Bind(R.id.todo_list)
     RecyclerView todoList;
 
