@@ -25,7 +25,7 @@ public class BriteDatabaseSingleton {
     }
 
     private static SQLiteOpenHelper getSqLiteOpenHelper(Context context) {
-        return DbOpenHelper.newInstance(context);
+        return MigratedOpenHelper.open(context, "migrations", "todo.db");
     }
 
     private BriteDatabaseSingleton() {
